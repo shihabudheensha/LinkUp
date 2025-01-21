@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <link href="css/style.css" rel="stylesheet">
+   <link rel="icon" type="image/svg+xml"
+      href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXFgk4myswk6OhVHe7g7YVUlR7RD-ERO2OHw&amp;s">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <!--this url for jquery-->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  
+    <!--this url for moment.js-->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+
+   <script src="https://cdn.tailwindcss.com"></script>
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&amp;display=swap" rel="stylesheet" />
+
+   <title>Tinker Hub</title>
+
+</head>
+
+<body>
+   <div class="app-container">
+      <div class="logo">
+         <a href="https://tinkerhub.org/" target="_blank">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXFgk4myswk6OhVHe7g7YVUlR7RD-ERO2OHw&amp;s"
+               alt="Tinker Hub Logo">
+         </a>
+         <h3>Tinker Hub</h3>
+      </div>
+      <div class="color-block" id="colorBlock">
+         <div class="random-block"
+            style="position: absolute; left: 1404px; top: 632px; background-color: rgb(34, 109, 48); width: 10px; height: 10px; z-index: -99; transform: rotate(147deg);">
+         </div>
+         <div class="random-block"
+            style="position: absolute; left: 1375px; top: 93px; background-color: rgb(145, 174, 168); width: 10px; height: 10px; z-index: -99; transform: rotate(354deg);">
+         </div>
+         <div class="random-block"
+            style="position: absolute; left: 1450px; top: 630px; width: 10px; height: 10px; z-index: -99; transform: rotate(122deg);">
+         </div>
+         <div class="random-block"
+            style="position: absolute; left: 1040px; top: 556px; background-color: rgb(41, 252, 188); width: 10px; height: 10px; z-index: -99; transform: rotate(193deg);">
+         </div>
+         <div class="random-block"
+            style="position: absolute; left: 393px; top: 590px; background-color: rgb(105, 13, 157); width: 10px; height: 10px; z-index: -99; transform: rotate(143deg);">
+         </div>
+         <div class="random-block"
+            style="position: absolute; left: 1435px; top: 622px; background-color: rgb(42, 98, 45); width: 10px; height: 10px; z-index: -99; transform: rotate(84deg);">
+         </div>
+         <div class="random-block"
+            style="position: absolute; left: 224px; top: 573px; background-color: rgb(66, 41, 7); width: 10px; height: 10px; z-index: -99; transform: rotate(31deg);">
+         </div>
+         <div class="random-block"
+            style="position: absolute; left: 859px; top: 449px; background-color: rgb(94, 127, 218); width: 10px; height: 10px; z-index: -99; transform: rotate(20deg);">
+         </div>
+         <div class="random-block"
+            style="position: absolute; left: 1433px; top: 478px; background-color: rgb(142, 246, 65); width: 10px; height: 10px; z-index: -99; transform: rotate(116deg);">
+         </div>
+         <div class="random-block"
+            style="position: absolute; left: 340px; top: 463px; background-color: rgb(132, 231, 211); width: 10px; height: 10px; z-index: -99; transform: rotate(122deg);">
+         </div>
+      </div>
+
+      <h2 class="search-title">Search Events</h2>
+      <input type="text" id="nameInput" placeholder="Enter name" class="search-input">
+      <button id="searchButton" onclick="handleSearch()">Search</button>
+      <div class="results-container">
+         <h2 class="results-title">Results</h2>
+
+         <div class="max-w-7xl mx-auto">
+            <div id="events-holder" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+
+
+
+
+            </div>
+         </div>
+
+      </div>
+   </div>
+
+
+   <script>
+
+
+      const API_KEY = 'AIzaSyBPsZJstA4soxiFjDSwtblKJOvObCgEkmg';
+      const clientId = '183058898586-ld3n87r7erfmj104c1a41c4ng625hsjv.apps.googleusercontent.com'
+      const SHEET_ID = '1HHrFqW32tdsht1A6vDUxQxa2ZurNKJ2oDQ4Ss16BSpU';
+      const RANGE = 'Event Registration';
+
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+
+      var events = [];
+
+      fetch(url)
+         .then(response => response.json())
+         .then(data => {
+
+            events = data.values;
+            console.log(events);
+
+            for (i = 1; i <  events.length; i++) {
+
+               var eventName = events[i][1];
+               var eventDesc = events[i][2];
+               var eventDt = moment(events[i][4]).format('DD MMM YY');
+               var eventvenue =events[i][6];
+               
+               var eventBanner = events[i][7];
+               var params = new URLSearchParams(new URL(eventBanner).search);
+               var id = params.get("id"); 
+                eventBanner = `https://lh3.googleusercontent.com/d/${id}=w1024?authuser=0`;
+
+               var eventStr = `<div eventno="${i}" class="bg-white rounded-lg shadow-lg overflow-hidden">
+                  <img alt="High-resolution image of the event banner" class="w-full h-48 object-cover" 
+                  height="300" src="${eventBanner}" width="600"/>
+                  <div class="p-6">
+                  <h2 class="text-2xl font-bold mb-2">${eventName}</h2>
+                  <p class="text-gray-700 mb-4">${eventDesc}</p>
+                  <div class="flex items-center mb-4">
+                  <span class="bg-blue-500 text-white text-sm font-semibold
+                   mr-2 px-2.5 py-0.5 rounded">${eventDt}
+                  </span>
+                  <div class="flex items-center text-gray-700">
+                     <i class="fas fa-map-marker-alt mr-2">
+                     </i>
+                     <span>
+                      ${eventvenue}
+                     </span>
+                  </div>
+                  </div>
+                  <button  class="view-participant w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition duration-300">
+                    View Participants
+                  </button>
+                  </div>
+               </div>`
+
+               $("#events-holder").append(eventStr)
+            }
+
+         })
+         .catch(error => console.error('Error fetching data:', error));
+
+         $('#events-holder').on('click', '.view-participant', function() {
+              var eventNo = $(this).parent().parent().attr("eventno");
+              var url = `Home.html?event=${eventNo}`;
+              window.location = url;
+         }); 
+
+   </script>
+</body>
+
+</html>

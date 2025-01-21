@@ -59,7 +59,7 @@
       </div>
 
       <h2 class="search-title">Search People</h2>
-      <input type="text" id="nameInput" placeholder="Enter name" class="search-input" onkeydown="handleKeyDown(event)">
+      <input type="text" id="nameInput" placeholder="Enter name" class="search-input">
       <button id="searchButton" onclick="handleSearch()">Search</button>
       <div class="results-container">
          <h2 class="results-title">Results</h2>
@@ -105,63 +105,113 @@
 
    <script>
 
-      
-      const API_KEY = 'AIzaSyBPsZJstA4soxiFjDSwtblKJOvObCgEkmg';
-      const clientId = '183058898586-ld3n87r7erfmj104c1a41c4ng625hsjv.apps.googleusercontent.com'
-      const SHEET_ID = '1NaRLeOsIKkO7N47wqsa-kchYcVOQ9C-HqpaDpdkzCgQ';
-      const RANGE = 'Event Participants';
+      var url_string = window.location.href
+      var addressUrl = new URL(url_string);
+      var eventNo = parseInt(addressUrl.searchParams.get("event"));
 
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+      getEventData()
+
+       function getEventData(){
+
+         const API_KEY = 'AIzaSyBPsZJstA4soxiFjDSwtblKJOvObCgEkmg';
+         const clientId = '183058898586-ld3n87r7erfmj104c1a41c4ng625hsjv.apps.googleusercontent.com'
+         const SHEET_ID = '1HHrFqW32tdsht1A6vDUxQxa2ZurNKJ2oDQ4Ss16BSpU';
+         const RANGE = 'Event Registration';
+
+         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+
+         fetch(url)
+            .then(response => response.json())
+            .then(data => {
+               events = data.values;
+               console.log("events = ", events);
+
+               var sheetID = events[eventNo][8];
+               var sheetName = events[eventNo][9];
+               getParticipants(sheetID,sheetName);
+
+            })
+            .catch(error => console.error('Error fetching data:', error));
+       }
+
+      
 
       var eventParticipants = [];
 
-      fetch(url)
-         .then(response => response.json())
-         .then(data => {
+      function getParticipants(sheetID,sheetName) {
 
-            const eventParticipants = data.values;
-            console.log("sheetData = ", eventParticipants);
 
-            for(i=1;i<eventParticipants.length;i++){
+         const API_KEY = 'AIzaSyBPsZJstA4soxiFjDSwtblKJOvObCgEkmg';
+         const clientId = '183058898586-ld3n87r7erfmj104c1a41c4ng625hsjv.apps.googleusercontent.com'
+         const SHEET_ID = sheetID;
+         const RANGE = sheetName;
 
-            
-              var name = eventParticipants[i][1];
-              var skills = eventParticipants[i][5];
-              var profilePic = eventParticipants[i][10];
 
-              if (typeof profilePic === 'undefined'){
-               profilePic = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfaPyeDyTpc2U7lR96etWzLQU5s77awUPs1Zt17g8LwWLs9vzTmIxlgYHLdpDYRK9Mxj8&amp;usqp=CAU";
-              }else{
-               var params = new URLSearchParams(new URL(profilePic).search);
-               var id = params.get("id"); 
-                profilePic = `https://lh3.googleusercontent.com/d/${id}=w1024?authuser=0`;
-              }  
-                 
-               var participantCard = `<li cardno="${i}" class="result-item">
+         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+
+
+         fetch(url)
+            .then(response => response.json())
+            .then(data => {
+
+               eventParticipants = data.values;
+               console.log("sheetData = ", eventParticipants);
+
+               for (i = 1; i < eventParticipants.length; i++) {
+
+
+                  var name = eventParticipants[i][1];
+                  var skills = eventParticipants[i][5];
+                  var profilePic = eventParticipants[i][10];
+
+                  if (typeof profilePic === 'undefined') {
+                     profilePic = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfaPyeDyTpc2U7lR96etWzLQU5s77awUPs1Zt17g8LwWLs9vzTmIxlgYHLdpDYRK9Mxj8&amp;usqp=CAU";
+                  } else {
+                     var params = new URLSearchParams(new URL(profilePic).search);
+                     var id = params.get("id");
+                     profilePic = `https://lh3.googleusercontent.com/d/${id}=w1024?authuser=0`;
+                  }
+
+                  var participantCard = `<li cardno="${i}" class="result-item">
                  <img class="profileImg" src="${profilePic}" atl="profile img of Alice">
                  <div class="details">
                     <p><strong>Name:</strong> ${name}</p>
                     <p><strong>Skills:</strong> ${skills}</p>
                  </div>
               </li>`
-              
-             
-              $("#resultsList").append(participantCard)
+
+
+                  $("#resultsList").append(participantCard)
+               }
+
+
+
+            })
+            .catch(error => console.error('Error fetching data:', error));
+      }
+
+
+      $('#resultsList').on('click', '.result-item', function () {
+
+         var cardno = $(this).attr("cardno");
+         var url = `profile.html?cardno=${cardno}`;
+         window.location = url;
+
+      });
+
+
+      $("#nameInput").on("keyup change", function (e) {
+         var serachVal = $(this).val().toLowerCase();
+         for (i = 1; i < eventParticipants.length; i++) {
+            var name = eventParticipants[i][1].toLowerCase();
+            if (name.includes(serachVal)) {
+               $(`.result-item[cardno=${i}]`).show();
+            } else {
+               $(`.result-item[cardno=${i}]`).hide();
             }
+         }
+      });
 
-           
-
-         })
-         .catch(error => console.error('Error fetching data:', error));
-
-         
-            $('#resultsList').on('click', '.result-item', function() {
-              
-               var cardno = $(this).attr("cardno");
-               var url = `profile.html?cardno=${cardno}`;
-               window.location = url;
-
-            }); 
    </script>
 
 

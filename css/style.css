@@ -104,6 +104,7 @@
     color: white;
     cursor:pointer;
     margin-left:auto;
+    display: none;
   }
   #searchButton:hover{
     background: rgb(255, 248, 248);

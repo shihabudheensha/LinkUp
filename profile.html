@@ -33,6 +33,18 @@
           <ul id="profile-skills">
              
           </ul>
+
+          <h3>College:</h3>
+          <ul id="college">
+             <li></li>
+          </ul>
+
+          <h3>Department:</h3>
+          <ul id="dept">
+             <li>CSE - Third Year</li>
+          </ul>
+
+
           <h3>Social Media:</h3>
           <div class="social">
             
@@ -91,7 +103,11 @@
             var name = eventParticipants[cardno][1];
             var profilePic = eventParticipants[cardno][10];
             var skill = eventParticipants[cardno][5];
-            
+            var college = eventParticipants[cardno][2];
+            var year = eventParticipants[cardno][4];
+            var dept = eventParticipants[cardno][3];
+            var skillLevel = eventParticipants[cardno][6];
+
             var linkedinUrl = eventParticipants[cardno][7];
             var instaUrl = eventParticipants[cardno][9];
             var githubUrl = eventParticipants[cardno][8];
@@ -106,7 +122,11 @@
 
             $("#profile-name").html(name);
             $("#profileImage").attr("src",profilePic)
-            $("#profile-skills").html(`<li>${skill}</li>`)
+            $("#profile-skills").html(`<li>${skill} - ${skillLevel}</li>`)
+            $("#college").html(`<li>${college}</li>`)
+            $("#dept").html(`<li>${dept} - ${year}</li>`)
+            
+
 
             $("#instagram-link").attr("href",instaUrl);
             $("#linkedin-link").attr("href",linkedinUrl);
